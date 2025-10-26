@@ -1,23 +1,66 @@
-//! By convention, root.zig is the root source file when making a library.
 const std = @import("std");
 
-pub fn bufferedPrint() !void {
-    // Stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    var stdout_buffer: [1024]u8 = undefined;
-    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
-    const stdout = &stdout_writer.interface;
+// Maybe the lists are only off by a small amount! To find out, pair up the numbers
+// and measure how far apart they are. Pair up the smallest number in the left
+// list with the smallest number in the right list, then the second-smallest
+// left number with the second-smallest right number, and so on.
 
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
+// Within each pair, figure out how far apart the two numbers are; you'll need
+// to add up all of those distances. For example, if you pair up a 3 from the
+// left list with a 7 from the right list, the distance apart is 4; if you pair
+// up a 9 with a 3, the distance apart is 6.
 
-    try stdout.flush(); // Don't forget to flush!
+const Pair = struct {
+    left: i32,
+    right: i32,
+};
+
+pub fn dayOnePuzzleOne(allocator: std.mem.Allocator, file_path: []const u8) !u32 {
+    var pairs = try parseFile(allocator, file_path);
+    defer pairs.deinit(allocator);
+
+    std.mem.sort(i32, pairs.items(.left), {}, std.sort.asc(i32));
+    std.mem.sort(i32, pairs.items(.right), {}, std.sort.asc(i32));
+
+    const left_items: []const i32 = pairs.items(.left);
+    const right_items: []const i32 = pairs.items(.right);
+
+    var total_distance: u32 = 0;
+    for (0..pairs.len) |i| {
+        const left = left_items[i];
+        const right = right_items[i];
+
+        total_distance += @abs(left - right);
+    }
+
+    return total_distance;
 }
 
-pub fn add(a: i32, b: i32) i32 {
-    return a + b;
-}
+fn parseFile(allocator: std.mem.Allocator, file_path: []const u8) !std.MultiArrayList(Pair) {
+    const LINE_SIZE = 13;
 
-test "basic add functionality" {
-    try std.testing.expect(add(3, 7) == 10);
+    var file = try std.fs.cwd().openFile(file_path, .{});
+    defer file.close();
+    const file_size = try file.getEndPos();
+    const mapped_memory = try std.posix.mmap(null, file_size, std.posix.PROT.READ, .{ .TYPE = .SHARED }, file.handle, 0);
+    defer std.posix.munmap(mapped_memory);
+
+    var pairs = std.MultiArrayList(Pair){};
+
+    var i: usize = 0;
+    while (i < file_size) : (i += LINE_SIZE + 1) {
+        const line = mapped_memory[i .. i + LINE_SIZE];
+        const left = line[0..5];
+        const right = line[8..LINE_SIZE];
+
+        const left_number = try std.fmt.parseInt(i32, left, 10);
+        const right_number = try std.fmt.parseInt(i32, right, 10);
+
+        try pairs.append(allocator, .{
+            .left = left_number,
+            .right = right_number,
+        });
+    }
+
+    return pairs;
 }
