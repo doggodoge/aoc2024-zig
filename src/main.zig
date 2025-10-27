@@ -25,10 +25,16 @@ pub fn main() !void {
 
     switch (day) {
         1 => {
-            const puzzle_one_result = try everybody_codes.dayOnePuzzleOne(arena_alloc, puzzle_input_path);
-            const puzzle_two_result = try everybody_codes.dayOnePuzzleTwo(arena_alloc, puzzle_input_path);
-            std.debug.print("Puzzle one: {d}\n", .{puzzle_one_result});
-            std.debug.print("Puzzle two: {d}\n", .{puzzle_two_result});
+            const p1_result = try everybody_codes.day_one.p1(arena_alloc, puzzle_input_path);
+            const p2_result = try everybody_codes.day_one.p2(arena_alloc, puzzle_input_path);
+            std.debug.print("Puzzle one: {d}\n", .{p1_result});
+            std.debug.print("Puzzle two: {d}\n", .{p2_result});
+        },
+        2 => {
+            const p1_result = try everybody_codes.day_two.p1(arena_alloc, puzzle_input_path);
+            std.debug.print("Puzzle one: {d}\n", .{p1_result});
+            const p2_result = try everybody_codes.day_two.p2(arena_alloc, puzzle_input_path);
+            std.debug.print("Puzzle one: {d}\n", .{p2_result});
         },
         else => {
             std.debug.print("Not a valid day.\n", .{});
