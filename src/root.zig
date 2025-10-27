@@ -1,21 +1,11 @@
 const std = @import("std");
 
-// Maybe the lists are only off by a small amount! To find out, pair up the numbers
-// and measure how far apart they are. Pair up the smallest number in the left
-// list with the smallest number in the right list, then the second-smallest
-// left number with the second-smallest right number, and so on.
-
-// Within each pair, figure out how far apart the two numbers are; you'll need
-// to add up all of those distances. For example, if you pair up a 3 from the
-// left list with a 7 from the right list, the distance apart is 4; if you pair
-// up a 9 with a 3, the distance apart is 6.
-
 const Pair = struct {
     left: i32,
     right: i32,
 };
 
-pub fn dayOnePuzzleOne(allocator: std.mem.Allocator, file_path: []const u8) !u32 {
+pub fn dayOnePuzzleOne(allocator: std.mem.Allocator, file_path: []const u8) !u64 {
     var pairs = try parseFile(allocator, file_path);
     defer pairs.deinit(allocator);
 
@@ -25,7 +15,7 @@ pub fn dayOnePuzzleOne(allocator: std.mem.Allocator, file_path: []const u8) !u32
     const left_items: []const i32 = pairs.items(.left);
     const right_items: []const i32 = pairs.items(.right);
 
-    var total_distance: u32 = 0;
+    var total_distance: u64 = 0;
     for (0..pairs.len) |i| {
         const left = left_items[i];
         const right = right_items[i];
@@ -36,11 +26,43 @@ pub fn dayOnePuzzleOne(allocator: std.mem.Allocator, file_path: []const u8) !u32
     return total_distance;
 }
 
+pub fn dayOnePuzzleTwo(allocator: std.mem.Allocator, file_path: []const u8) !u64 {
+    var pairs = try parseFile(allocator, file_path);
+    defer pairs.deinit(allocator);
+
+    std.mem.sort(i32, pairs.items(.left), {}, std.sort.asc(i32));
+    std.mem.sort(i32, pairs.items(.right), {}, std.sort.asc(i32));
+
+    const left_items: []const i32 = pairs.items(.left);
+    const right_items: []const i32 = pairs.items(.right);
+
+    var total_distance: u64 = 0;
+
+    for (left_items) |left| {
+        const left_count_in_right = duplicateCount(left, right_items);
+
+        total_distance += @abs(left) * @as(u64, left_count_in_right);
+    }
+
+    return total_distance;
+}
+
+fn duplicateCount(item_to_count: i32, sorted_items: []const i32) usize {
+    var count: usize = 0;
+
+    for (sorted_items) |item| {
+        count += @intFromBool(item == item_to_count);
+    }
+
+    return count;
+}
+
 fn parseFile(allocator: std.mem.Allocator, file_path: []const u8) !std.MultiArrayList(Pair) {
     const LINE_SIZE = 13;
 
     var file = try std.fs.cwd().openFile(file_path, .{});
     defer file.close();
+
     const file_size = try file.getEndPos();
     const mapped_memory = try std.posix.mmap(null, file_size, std.posix.PROT.READ, .{ .TYPE = .SHARED }, file.handle, 0);
     defer std.posix.munmap(mapped_memory);
