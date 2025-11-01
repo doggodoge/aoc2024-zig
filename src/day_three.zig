@@ -7,8 +7,13 @@ const Pair = struct {
 
 pub fn p1(allocator: std.mem.Allocator, file_path: []const u8) !u64 {
     const bytes = try readFile(allocator, file_path);
+    defer allocator.free(bytes);
+
     var mul_pairs = std.ArrayList(Pair){};
+    defer mul_pairs.deinit(allocator);
+
     const indices = try findAllMulIndices(allocator, bytes);
+    defer allocator.free(indices);
 
     for (indices) |i| {
         const pair = parseMul(i, bytes) catch continue;
