@@ -32,13 +32,15 @@ pub fn main() !void {
         },
         2 => {
             const p1_result = try everybody_codes.day_two.p1(arena_alloc, puzzle_input_path);
-            std.debug.print("Puzzle one: {d}\n", .{p1_result});
             const p2_result = try everybody_codes.day_two.p2(arena_alloc, puzzle_input_path);
-            std.debug.print("Puzzle one: {d}\n", .{p2_result});
+            std.debug.print("Puzzle one: {d}\n", .{p1_result});
+            std.debug.print("Puzzle two: {d}\n", .{p2_result});
         },
         3 => {
             const p1_result = try everybody_codes.day_three.p1(arena_alloc, puzzle_input_path);
+            const p2_result = try everybody_codes.day_three.p2(arena_alloc, puzzle_input_path);
             std.debug.print("Puzzle one: {d}\n", .{p1_result});
+            std.debug.print("Puzzle two: {d}\n", .{p2_result});
         },
         else => {
             std.debug.print("Not a valid day.\n", .{});
