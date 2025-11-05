@@ -23,6 +23,7 @@ pub fn main() !void {
     defer arena.deinit();
     const arena_alloc = arena.allocator();
 
+    // It ain't pretty, but it works.
     switch (day) {
         1 => {
             const p1_result = try everybody_codes.day_one.p1(arena_alloc, puzzle_input_path);
@@ -41,6 +42,10 @@ pub fn main() !void {
             const p2_result = try everybody_codes.day_three.p2(arena_alloc, puzzle_input_path);
             std.debug.print("Puzzle one: {d}\n", .{p1_result});
             std.debug.print("Puzzle two: {d}\n", .{p2_result});
+        },
+        4 => {
+            const p1_result = try everybody_codes.day_four.p1(arena_alloc, puzzle_input_path);
+            std.debug.print("Puzzle one: {d}\n", .{p1_result});
         },
         else => {
             std.debug.print("Not a valid day.\n", .{});
