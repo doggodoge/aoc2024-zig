@@ -5,3 +5,5 @@ zig-out/
 .fleet/
 data/
 pcre2-*/
+
+.DS_Store
