@@ -3,13 +3,6 @@ const eql = std.mem.eql;
 const Allocator = std.mem.Allocator;
 const splitScalar = std.mem.splitScalar;
 
-// The iterator approach is verbose and honestly not the best way to do things.
-// New idea:
-// 1. From each position, reach out 4 chars in every direction.
-// 2. Check for XMAS, and SAMX.
-// 3. ???
-// 4. Profit
-
 pub fn p1(allocator: Allocator, file_path: []const u8) !u64 {
     const result = try parseFile(allocator, file_path);
     defer allocator.free(result.grid);
