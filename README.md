@@ -1,3 +1,6 @@
+> [!WARNING]
+> Archived on GitHub and moved to https://git.sr.ht/~gary_moore/aoc2024-zig
+
 # Advent of Code 2024: Zig
 
 Yee, trying out this language with a few of the problems from last years advent
